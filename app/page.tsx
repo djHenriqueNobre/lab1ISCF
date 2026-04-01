@@ -1,15 +1,3 @@
-
-
-interface SensorData {
-  x: number | null
-  y: number | null
-  z: number | null
-  temperatura: number | null
-  created_at: string
-}
-
-
-
 "use client"
 
 import { useEffect, useState } from "react"
@@ -23,6 +11,15 @@ import {
   Tooltip
 } from "recharts"
 
+
+interface SensorData {
+  x: number | null
+  y: number | null
+  z: number | null
+  temperatura: number | null
+  created_at: string
+}
+
 export default function Home() {
   const [data, setData] = useState<SensorData[]>([])
   const [intervalTime, setIntervalTime] = useState(1000)
@@ -30,14 +27,14 @@ export default function Home() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const { data, error } = await supabase
-        .from("sensor")
+      const { data: sensorData, error } = await supabase
+        .from<SensorData>("sensor")
         .select("*")
         .order("created_at", { ascending: true })
         .limit(50)
 
-      if (!error && data) {
-        setData(data)
+      if (!error && sensorData) {
+        setData(sensorData)
       }
     }
 
@@ -54,17 +51,17 @@ export default function Home() {
     const valuesZ = data.map(d => d.z).filter(v => v !== null)
     const valuesTemp = data.map(d => d.temperatura).filter(v => v !== null)
 
-    const calcStats = (arr) => ({
+    const calcStats = (arr: number[]) => ({
       avg: arr.reduce((a, b) => a + b, 0) / arr.length,
       min: Math.min(...arr),
       max: Math.max(...arr)
     })
 
     const reportData = {
-      X: calcStats(valuesX),
-      Y: calcStats(valuesY),
-      Z: calcStats(valuesZ),
-      Temperatura: calcStats(valuesTemp),
+      X: calcStats(valuesX as number[]),
+      Y: calcStats(valuesY as number[]),
+      Z: calcStats(valuesZ as number[]),
+      Temperatura: calcStats(valuesTemp as number[]),
       total_samples: data.length,
       generated_at: new Date().toISOString()
     }

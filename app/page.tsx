@@ -12,7 +12,7 @@ import {
 } from "recharts"
 
 export default function Home() {
-  const [data, setData] = useState([])
+  const [data, setData] = useState<SensorData[]>([])
   const [intervalTime, setIntervalTime] = useState(1000)
   const [report, setReport] = useState(null)
 

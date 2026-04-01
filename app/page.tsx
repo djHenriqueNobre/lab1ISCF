@@ -1,15 +1,5 @@
 "use client"
 
-
-interface SensorData {
-  x: number | null
-  y: number | null
-  z: number | null
-  temperatura: number | null
-  created_at: string
-}
-
-
 import { useEffect, useState } from "react"
 import { supabase } from "../lib/supabase"
 import {
@@ -22,23 +12,29 @@ import {
 } from "recharts"
 
 
-
+type SensorData = {
+  x: number | null
+  y: number | null
+  z: number | null
+  temperatura: number | null
+  created_at: string
+}
 
 export default function Home() {
   const [data, setData] = useState<SensorData[]>([])
   const [intervalTime, setIntervalTime] = useState(1000)
-  const [report, setReport] = useState(null)
+  const [report, setReport] = useState<any>(null)
 
   useEffect(() => {
     const fetchData = async () => {
-      const { data: sensorData, error } = await supabase
-        .from<SensorData>("sensor")
+      const { data, error } = await supabase
+        .from("sensor")
         .select("*")
         .order("created_at", { ascending: true })
         .limit(50)
 
-      if (!error && sensorData) {
-        setData(sensorData)
+      if (!error && data) {
+        setData(data as SensorData[])
       }
     }
 
@@ -74,6 +70,7 @@ export default function Home() {
   }
 
   const downloadReport = () => {
+    if (!report) return
     const blob = new Blob([JSON.stringify(report, null, 2)], {
       type: "application/json"
     })

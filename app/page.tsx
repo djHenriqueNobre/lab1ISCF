@@ -1,5 +1,15 @@
 "use client"
 
+
+interface SensorData {
+  x: number | null
+  y: number | null
+  z: number | null
+  temperatura: number | null
+  created_at: string
+}
+
+
 import { useEffect, useState } from "react"
 import { supabase } from "../lib/supabase"
 import {
@@ -12,13 +22,7 @@ import {
 } from "recharts"
 
 
-interface SensorData {
-  x: number | null
-  y: number | null
-  z: number | null
-  temperatura: number | null
-  created_at: string
-}
+
 
 export default function Home() {
   const [data, setData] = useState<SensorData[]>([])

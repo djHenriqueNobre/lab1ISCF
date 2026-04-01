@@ -1,3 +1,15 @@
+
+
+interface SensorData {
+  x: number | null
+  y: number | null
+  z: number | null
+  temperatura: number | null
+  created_at: string
+}
+
+
+
 "use client"
 
 import { useEffect, useState } from "react"

@@ -11,8 +11,7 @@ import {
   Tooltip
 } from "recharts"
 
-
-type SensorData = {
+interface SensorData {
   x: number | null
   y: number | null
   z: number | null
@@ -23,7 +22,7 @@ type SensorData = {
 export default function Home() {
   const [data, setData] = useState<SensorData[]>([])
   const [intervalTime, setIntervalTime] = useState(1000)
-  const [report, setReport] = useState<any>(null)
+  const [report, setReport] = useState<Record<string, unknown> | null>(null)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -46,10 +45,10 @@ export default function Home() {
   const generateReport = () => {
     if (data.length === 0) return
 
-    const valuesX = data.map(d => d.x).filter(v => v !== null)
-    const valuesY = data.map(d => d.y).filter(v => v !== null)
-    const valuesZ = data.map(d => d.z).filter(v => v !== null)
-    const valuesTemp = data.map(d => d.temperatura).filter(v => v !== null)
+    const valuesX = data.map(d => d.x).filter((v): v is number => v !== null)
+    const valuesY = data.map(d => d.y).filter((v): v is number => v !== null)
+    const valuesZ = data.map(d => d.z).filter((v): v is number => v !== null)
+    const valuesTemp = data.map(d => d.temperatura).filter((v): v is number => v !== null)
 
     const calcStats = (arr: number[]) => ({
       avg: arr.reduce((a, b) => a + b, 0) / arr.length,
@@ -57,16 +56,14 @@ export default function Home() {
       max: Math.max(...arr)
     })
 
-    const reportData = {
-      X: calcStats(valuesX as number[]),
-      Y: calcStats(valuesY as number[]),
-      Z: calcStats(valuesZ as number[]),
-      Temperatura: calcStats(valuesTemp as number[]),
+    setReport({
+      X: calcStats(valuesX),
+      Y: calcStats(valuesY),
+      Z: calcStats(valuesZ),
+      Temperatura: calcStats(valuesTemp),
       total_samples: data.length,
       generated_at: new Date().toISOString()
-    }
-
-    setReport(reportData)
+    })
   }
 
   const downloadReport = () => {
@@ -95,10 +92,7 @@ export default function Home() {
           <h2>X Axis</h2>
           <LineChart width={400} height={250} data={data}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="created_at"
-              tickFormatter={(v) => new Date(v).toLocaleTimeString()}
-            />
+            <XAxis dataKey="created_at" tickFormatter={(v) => new Date(v).toLocaleTimeString()} />
             <YAxis />
             <Tooltip />
             <Line type="monotone" dataKey="x" stroke="#8884d8" />
@@ -108,10 +102,7 @@ export default function Home() {
           <h2>Y Axis</h2>
           <LineChart width={400} height={250} data={data}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="created_at"
-              tickFormatter={(v) => new Date(v).toLocaleTimeString()}
-            />
+            <XAxis dataKey="created_at" tickFormatter={(v) => new Date(v).toLocaleTimeString()} />
             <YAxis />
             <Tooltip />
             <Line type="monotone" dataKey="y" stroke="#82ca9d" />
@@ -121,10 +112,7 @@ export default function Home() {
           <h2>Z Axis</h2>
           <LineChart width={400} height={250} data={data}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="created_at"
-              tickFormatter={(v) => new Date(v).toLocaleTimeString()}
-            />
+            <XAxis dataKey="created_at" tickFormatter={(v) => new Date(v).toLocaleTimeString()} />
             <YAxis />
             <Tooltip />
             <Line type="monotone" dataKey="z" stroke="#ff7300" />
@@ -134,10 +122,7 @@ export default function Home() {
           <h2>Temperatura</h2>
           <LineChart width={400} height={250} data={data}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="created_at"
-              tickFormatter={(v) => new Date(v).toLocaleTimeString()}
-            />
+            <XAxis dataKey="created_at" tickFormatter={(v) => new Date(v).toLocaleTimeString()} />
             <YAxis />
             <Tooltip />
             <Line type="monotone" dataKey="temperatura" stroke="#ff0000" />
